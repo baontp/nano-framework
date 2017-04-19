@@ -1,0 +1,21 @@
+{
+  "name": "nano-framework",
+  "version": "1.0.1",
+  "description": "Server Framework for game",
+  "main": "no",
+  "scripts": {
+    "test": "npm test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/baontp/nano-framework.git"
+  },
+  "keywords": [
+    "nano",
+    "game",
+    "framework",
+    "server"
+  ],
+  "author": "baontp",
+  "license": "MIT"
+}

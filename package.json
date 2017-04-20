@@ -1,21 +1,89 @@
 {
-  "name": "nano-framework",
-  "version": "1.0.1",
+  "_args": [
+    [
+      {
+        "raw": "nano-framework",
+        "scope": null,
+        "escapedName": "nano-framework",
+        "name": "nano-framework",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "D:\\project\\Bingo\\trunk\\api\\game_server"
+    ]
+  ],
+  "_from": "nano-framework@latest",
+  "_id": "nano-framework@1.0.1",
+  "_inCache": true,
+  "_location": "/nano-framework",
+  "_nodeVersion": "6.9.5",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/nano-framework-1.0.1.tgz_1492579357025_0.37710181530565023"
+  },
+  "_npmUser": {
+    "name": "baontp",
+    "email": "baontp@gmail.com"
+  },
+  "_npmVersion": "3.10.10",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "nano-framework",
+    "scope": null,
+    "escapedName": "nano-framework",
+    "name": "nano-framework",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/nano-framework/-/nano-framework-1.0.1.tgz",
+  "_shasum": "c38a3c62f5af69eef4a48be300382b84e6b67e35",
+  "_shrinkwrap": null,
+  "_spec": "nano-framework",
+  "_where": "D:\\project\\Bingo\\trunk\\api\\game_server",
+  "author": {
+    "name": "baontp"
+  },
+  "bugs": {
+    "url": "https://github.com/baontp/nano-framework/issues"
+  },
+  "dependencies": {},
   "description": "Server Framework for game",
-  "main": "no",
-  "scripts": {
-    "test": "npm test.js"
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "c38a3c62f5af69eef4a48be300382b84e6b67e35",
+    "tarball": "https://registry.npmjs.org/nano-framework/-/nano-framework-1.0.1.tgz"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/baontp/nano-framework.git"
-  },
+  "gitHead": "0e4e4f037b0daa54403725a228ea40d0776ae725",
+  "homepage": "https://github.com/baontp/nano-framework#readme",
   "keywords": [
     "nano",
     "game",
     "framework",
     "server"
   ],
-  "author": "baontp",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "no",
+  "maintainers": [
+    {
+      "name": "baontp",
+      "email": "baontp@gmail.com"
+    }
+  ],
+  "name": "nano-framework",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baontp/nano-framework.git"
+  },
+  "scripts": {
+    "test": "npm test.js"
+  },
+  "version": "1.0.1"
 }

@@ -1,6 +1,6 @@
 'use strict';
 
-let logger = require('./logger').createLogger('USER');
+let logger = require('nano-log').createLogger('USER');
 let util = require('./util');
 
 class User {

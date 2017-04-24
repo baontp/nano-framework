@@ -51,11 +51,12 @@
   "bugs": {
     "url": "https://github.com/baontp/nano-framework/issues"
   },
-  "dependencies": {},
-  "description": "Server Framework for game",
-  "devDependencies": {
-      "nano-log": "1.0.3"
+  "dependencies": {
+    "hashmap": "^2.1.0",
+    "nano-log": "^1.0.3",
+    "ws": "^2.3.1"
   },
+  "description": "Server Framework for game",
   "directories": {},
   "dist": {
     "shasum": "c38a3c62f5af69eef4a48be300382b84e6b67e35",

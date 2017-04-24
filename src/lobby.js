@@ -2,7 +2,7 @@
 
 let Room = require('./room');
 let MessageBuilder = require('./message-builder');
-let logger = require('./logger').createLogger('LOBBY');
+let logger = require('nano-log').createLogger('LOBBY');
 
 let constants = require('./constants');
 let RoomType = constants.RoomType;

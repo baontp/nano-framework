@@ -26,7 +26,7 @@ class Services {
 
 let UserAuthService = {
     authenticateUser (user, authData, handleResult) {
-        return new Promise(function(resolve){
+        return new Promise(function (resolve) {
             resolve(handleResult);
         });
     }

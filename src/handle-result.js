@@ -1,7 +1,7 @@
 'use strict';
 
 class HandleResult {
-    constructor(){
+    constructor() {
         this.code = 0;
         this.skipResponse = false;
         this.skipNotify = false;

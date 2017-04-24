@@ -2,7 +2,7 @@
  * Created by baonguyen on 4/13/2017.
  */
 
-exports.Logger = require('./src/logger');
+exports.Logger = require('nano-log');
 exports.Server = require('./src/server');
 exports.Services = require('./src/services');
 exports.BaseRoom = require('./src/room');

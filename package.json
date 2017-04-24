@@ -53,7 +53,9 @@
   },
   "dependencies": {},
   "description": "Server Framework for game",
-  "devDependencies": {},
+  "devDependencies": {
+      "nano-log": "1.0.3"
+  },
   "directories": {},
   "dist": {
     "shasum": "c38a3c62f5af69eef4a48be300382b84e6b67e35",
@@ -85,5 +87,5 @@
   "scripts": {
     "test": "npm test.js"
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

@@ -86,7 +86,7 @@
     "url": "git+https://github.com/baontp/nano-framework.git"
   },
   "scripts": {
-    "test": "npm test.js"
+    "test": "npm test/index.js"
   },
   "version": "1.0.2"
 }

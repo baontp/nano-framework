@@ -8,9 +8,10 @@ exports.Services = require('./src/services');
 exports.BaseRoom = require('./src/room');
 exports.BaseUser = require('./src/user');
 
-exports.ServiceType = require('./src/constants').ServiceType;
-exports.MessageType = require('./src/constants').MessageType;
-exports.PayloadType = require('./src/constants').PayloadType;
-exports.ResultCode = require('./src/constants').ResultCode;
-exports.RoomType = require('./src/constants').RoomType;
-exports.RequestType = require('./src/constants').RequestType;
+let constant = require('./src/constants');
+exports.ServiceType = constant.ServiceType;
+exports.MessageType = constant.MessageType;
+exports.PayloadType = constant.PayloadType;
+exports.ResultCode = constant.ResultCode;
+exports.RoomType = constant.RoomType;
+exports.RequestType = constant.RequestType;

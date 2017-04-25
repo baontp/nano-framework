@@ -139,7 +139,7 @@ class Server extends EventEmitter {
             // refuse message from client when server is inactive
             if (!this._active) {
                 logger.info('Server is inactive, refuse request from client');
-                if (message.type = MessageType.REQUEST) {
+                if (message.type == MessageType.REQUEST) {
                     socket.sendMessage(MessageBuilder.buildResponseMessage(message.requestType, ResultCode.SERVICE_UNAVAILABLE));
                 }
                 return;

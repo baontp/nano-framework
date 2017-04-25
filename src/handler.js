@@ -98,12 +98,12 @@ class Handler {
         let handleResult = new HandleResult();
         let user = this._server.userFactory.createUser(userName, socket, null);
         this._server.services.getService(ServiceType.USER_AUTH).authenticateUser(user, authData, handleResult)
-            .then(function (handleResult) {
+            .then((handleResult) => {
                 if (handleResult.code == ResultCode.SUCCESS) {
                     let message = MessageBuilder.buildAuthResponse(ResultCode.SUCCESS, socket.sessionId, 'User Authentication success!');
                     user.send(message);
 
-                    this.primaryLobby.handleUserJoin(user, handleResult);
+                    this._server.primaryLobby.handleUserJoin(user, handleResult);
 
                     socket.user = user;
                     socket.recoverytime = payload.recoverytime;
@@ -135,7 +135,7 @@ class Handler {
                 params.unshift(user);
                 room[action].apply(room, params);
             } else {
-                user.send(MessageBuilder.buildResponseMessage(request.requestType(), ResultCode.BAD_REQUEST, PayloadType.JSON,
+                user.send(MessageBuilder.buildResponseMessage(request.requestType, ResultCode.BAD_REQUEST, PayloadType.JSON,
                     `${action} action is not defined or not a function in room ${room.id}`));
             }
         } else {

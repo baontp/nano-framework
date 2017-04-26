@@ -24,6 +24,7 @@ class Handler {
         this._requestHandlerMap.set(RequestType.CREATE_ROOM, this._handleCreateRoom);
         this._requestHandlerMap.set(RequestType.JOIN_ROOM, this._handleJoinRoom);
         this._requestHandlerMap.set(RequestType.LEAVE_ROOM, this._handleLeaveRoom);
+        this._requestHandlerMap.set(RequestType.FIND_ROOM, this._handleFindRoom);
     }
 
     onSocketConnected(socket) {
@@ -161,7 +162,34 @@ class Handler {
      * @private
      */
     _handleJoinRoom(socket, request) {
+        let user = socket.user;
+        let room = socket.room;
+        let desc = '';
+        if(room === this._server.primaryLobby) {
+            let handleResult = new HandleResult();
+            this._server.primaryLobby.handleUserLeave(user, handleResult);
 
+            if(handleResult.code == ResultCode.SUCCESS) {
+                let roomId = request.id;
+                room = this._server._roomMap.get(roomId);
+                if(!!room) {
+                    room.handleUserJoin(user, handleResult);
+                    if (handleResult.code == ResultCode.SUCCESS) {
+                        MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.SUCCESS, room, 'Can not leave lobby');
+                    } else {
+                        desc = `Can not join room id ${roomId}`;
+                    }
+                } else {
+                    desc = `Room ${roomId} does not exist`;
+                }
+            } else {
+                desc = 'Can not leave lobby';
+            }
+        } else {
+            desc = 'Already in room';
+        }
+
+        MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.REQUEST_FAILED, room, desc);
     }
 
     /**
@@ -172,6 +200,23 @@ class Handler {
      */
     _handleLeaveRoom(socket, request) {
 
+    }
+
+    /**
+     *
+     * @param {WebSocket} socket
+     * @param {RequestMessage} request
+     * @private
+     */
+    _handleFindRoom(socket, request) {
+        let room = this._server.findRoom();
+        if(!!room) {
+            let message = MessageBuilder.buildRoomResponse(RequestType.FIND_ROOM, ResultCode.SUCCESS, room);
+            socket.sendMessage(message);
+        } else {
+            let message = MessageBuilder.buildRoomResponse(RequestType.FIND_ROOM, ResultCode.REQUEST_FAILED, null);
+            socket.sendMessage(message);
+        }
     }
 }
 

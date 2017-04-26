@@ -1,8 +1,8 @@
 /**
  * Created by baonguyen on 4/13/2017.
  */
-
 exports.Logger = require('nano-log');
+exports.MessageBuilder = require('./src/message-builder');
 exports.Server = require('./src/server');
 exports.Services = require('./src/services');
 exports.BaseRoom = require('./src/room');
@@ -15,3 +15,4 @@ exports.PayloadType = constant.PayloadType;
 exports.ResultCode = constant.ResultCode;
 exports.RoomType = constant.RoomType;
 exports.RequestType = constant.RequestType;
+exports.NotifyType = constant.NotifyType;

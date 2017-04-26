@@ -3,8 +3,8 @@ let nano = require('../../');
 let logger = nano.Logger.createLogger('ROOM');
 
 class Room extends nano.BaseRoom {
-    constructor(){
-        super();
+    constructor(type){
+        super(type);
         logger.prefix = `${this.id}`;
     }
 

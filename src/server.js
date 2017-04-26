@@ -2,7 +2,6 @@
 
 let WebSocket = require('ws');
 let EventEmitter = require('events');
-let HashMap = require('hashmap');
 let util = require('./util');
 let logger = require('nano-log').createLogger('SYSTEM');
 let Handler = require('./handler');
@@ -27,30 +26,34 @@ class Server extends EventEmitter {
         this._services = new Services();
         this._parseConfig(config);
 
-        this._lobbyMap = new HashMap();
-        this._roomMap = new HashMap();
+        this._lobbyMap = new Map();
+        this._roomMap = new Map();
 
         if (!this._port)
             throw new Error('Port can not null or undefined');
     }
 
-    get services() { return this._services }
+    get services() {
+        return this._services
+    }
 
     /**
      *
      * @returns {{createRoom: (function(*=))} | {createLobby: (function()), createRoom: (function(*=))}}
      */
-    get roomFactory() { return this._roomFactory }
+    get roomFactory() {
+        return this._roomFactory
+    }
 
     /**
      *
      * @param {{createRoom: (function(*=))} | {createLobby: (function()), createRoom: (function(*=))}} roomFactory
      */
     set roomFactory(roomFactory) {
-        if(roomFactory.createLobby === undefined && typeof roomFactory.createLobby !== 'function') {
+        if (roomFactory.createLobby === undefined && typeof roomFactory.createLobby !== 'function') {
             logger.warn('Room Factory assigned does not implement createLobby function');
         }
-        if(roomFactory.createRoom === undefined && typeof roomFactory.createRoom !== 'function') {
+        if (roomFactory.createRoom === undefined && typeof roomFactory.createRoom !== 'function') {
             logger.error('Room Factory must be implemented createRoom function');
             throw new Error('Room Factory must be implemented createRoom function');
         }
@@ -61,15 +64,21 @@ class Server extends EventEmitter {
      *
      * @returns {{createUser: (function(*=, *=, *=))}|*}
      */
-    get userFactory() { return this._userFactory }
+    get userFactory() {
+        return this._userFactory
+    }
 
     /**
      *
      * @param {{createUser: (function(*=, *=, *=))}|*} userFactory
      */
-    set userFactory(userFactory) { this._userFactory = userFactory }
+    set userFactory(userFactory) {
+        this._userFactory = userFactory
+    }
 
-    get config() { return this._config }
+    get config() {
+        return this._config
+    }
 
     _parseConfig(config) {
         this._config = config;
@@ -93,7 +102,7 @@ class Server extends EventEmitter {
 
     _initPrimaryLobby() {
         let lobby;
-        if(this._roomFactory.createLobby) {
+        if (this._roomFactory.createLobby) {
             lobby = this._roomFactory.createLobby();
         } else {
             lobby = new Lobby();
@@ -102,7 +111,9 @@ class Server extends EventEmitter {
         this._lobbyMap.set(0, lobby);
     }
 
-    get primaryLobby() { return this._lobbyMap.get(0) };
+    get primaryLobby() {
+        return this._lobbyMap.get(0)
+    };
 
     _onNewConnection(socket) {
         // refuse new connection from client when server is inactive
@@ -147,9 +158,9 @@ class Server extends EventEmitter {
 
             // handle message from client
             try {
-                if(message.type == MessageType.REQUEST) {
+                if (message.type == MessageType.REQUEST) {
                     this._handler.onRequestReceived(socket, message);
-                } else if(message.type == MessageType.UPDATE) {
+                } else if (message.type == MessageType.UPDATE) {
                     this._handler.onUpdateReceived(socket, message);
                 }
             } catch (err) {
@@ -170,8 +181,20 @@ class Server extends EventEmitter {
         this._handler.onSocketConnected(socket);
     }
 
-    createRoom(type) {
+    createRoom(type, maxUser) {
+        let room = this._roomFactory.createRoom(type);
+        if(!!maxUser)
+            room.maxUser = maxUser;
+        this._roomMap.set(room.id, room);
+        return room;
+    }
 
+    findRoom() {
+        if (this._roomMap.size <= 0) return null;
+
+        let entry = this._roomMap.entries().next();
+        let room = entry.done ? null : entry.value[1];
+        return room;
     }
 }
 

@@ -38,6 +38,14 @@ RequestType[RequestType['USER_ACTION'] = 1] = 'USER_ACTION';
 RequestType[RequestType['CREATE_ROOM'] = 2] = 'CREATE_ROOM';
 RequestType[RequestType['JOIN_ROOM'] = 3] = 'JOIN_ROOM';
 RequestType[RequestType['LEAVE_ROOM'] = 4] = 'LEAVE_ROOM';
+RequestType[RequestType['FIND_ROOM'] = 5] = 'FIND_ROOM';
+
+let UpdateType = {};
+exports.UpdateType = UpdateType;
+
+let NotifyType = {};
+exports.NotifyType = NotifyType;
+NotifyType[NotifyType['USER_ACTION'] = 1] = 'USER_ACTION';
 
 let ServiceType = {};
 exports.ServiceType = ServiceType;

@@ -22,6 +22,8 @@ class GameServer extends nano.Server {
 
         this.roomFactory = RoomFactory;
         this.services.setUserAuthenticateService(CustomUserAuthService);
+
+        this.createRoom(1, 100);
     }
 }
 

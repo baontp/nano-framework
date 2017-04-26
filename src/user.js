@@ -8,7 +8,6 @@ class User {
         this._id = util.generateNumber();
         this._room = room;
         this._name = name;
-        this._alias = '';
         this._socket = socket;
         this._sessionId = socket.sessionId;
 
@@ -20,9 +19,6 @@ class User {
 
     get name(){ return this._name };
     set name(name){ return this._name = name };
-
-    get alias(){ return this._alias};
-    set alias(alias){ return this._alias = alias};
 
     get hasCleanup(){ return this._socket.deleted; }
 

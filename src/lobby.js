@@ -25,10 +25,6 @@ class Lobby extends Room {
 
         super.handleUserJoin(user, handleResult);
     }
-
-    chat(user, msg, receiver) {
-        logger.info(user.name, 'send chat :', msg);
-    }
 }
 
 module.exports = Lobby;

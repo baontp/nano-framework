@@ -3,7 +3,7 @@
 let MessageType = require('./constants').MessageType;
 let PayloadType = require('./constants').PayloadType;
 let RequestMessage = require('./message').RequestMessage;
-let UpdateMessage = require('./message').UpdateMessage;
+let UpdateMessage = require('./message').NotifyMessage;
 let util = require('./util');
 
 class MessageFilter {

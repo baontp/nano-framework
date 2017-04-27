@@ -1,7 +1,6 @@
 'use strict';
 
 let EventEmitter = require('events');
-let HashMap = require('hashmap');
 let util = require('./util');
 
 class Room extends EventEmitter {
@@ -11,7 +10,7 @@ class Room extends EventEmitter {
         this._owner = '';
         this._name = '';
         this._type = type;
-        this._users = new HashMap();
+        this._users = new Map();
         this._maxUser = 999999999;
     }
 
@@ -28,8 +27,25 @@ class Room extends EventEmitter {
     get name(){ return this._name};
     set name(name){ this._name = name};
 
+    broadcast(msg, excludes) {
+        if(!!excludes) {
+            let _users = Array.from(this._users.values()).filter(function(user){return excludes.indexOf(user) == -1;});
+            _users.forEach(function(user) {
+                user.sendMessage(msg);
+            });
+        } else {
+            for (let user of this._users.values()) {
+                user.sendMessage(msg);
+            }
+        }
+    }
+
+    findUserByName (name) {
+        this._users.get(name);
+    }
+
     removeUser(user) {
-        this._users.remove(user.name);
+        this._users.delete(user.name);
     }
 
     handleUserJoin(user, handleResult) {

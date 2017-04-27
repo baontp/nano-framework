@@ -1,13 +1,11 @@
 'use strict';
 
-let HashMap = require('hashmap');
-
 let constants = require('./constants');
 let ServiceType = constants.ServiceType;
 
 class Services {
     constructor() {
-        this._serviceMap = new HashMap();
+        this._serviceMap = new Map();
         this._serviceMap.set(ServiceType.USER_AUTH, UserAuthService);
     }
 

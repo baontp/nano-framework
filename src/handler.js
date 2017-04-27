@@ -1,6 +1,5 @@
 'use strict';
 
-let HashMap = require('hashmap');
 let constants = require('./constants');
 let util = require('./util');
 let User = require('./user');
@@ -16,8 +15,8 @@ let ServiceType = constants.ServiceType;
 class Handler {
     constructor(server) {
         this._server = server;
-        this._requestHandlerMap = new HashMap();
-        this._updateHandlerMap = new HashMap();
+        this._requestHandlerMap = new Map();
+        this._updateHandlerMap = new Map();
 
         this._requestHandlerMap.set(RequestType.AUTHENTICATE_USER, this._handleAuthRequest);
         this._requestHandlerMap.set(RequestType.USER_ACTION, this._handleUserAction);
@@ -64,10 +63,10 @@ class Handler {
     /**
      *
      * @param {WebSocket} socket
-     * @param {UpdateMessage} message
+     * @param {NotifyMessage} message
      */
     onUpdateReceived(socket, message) {
-        let updateType = message.updateType;
+        let updateType = message.notifyType;
         let updateHandler = this._updateHandlerMap.get(updateType);
         if (updateHandler != null) {
             let user = socket.user;
@@ -179,7 +178,7 @@ class Handler {
                 room = this._server._roomMap.get(roomId);
                 if (!!room) {
                     room.handleUserJoin(user, handleResult);
-                    if (handleResult.code == ResultCode.SUCCESS) {
+                    if (!handleResult.skipResponse && handleResult.code == ResultCode.SUCCESS) {
                         user.sendMessage(MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.SUCCESS, room));
                         return;
                     } else {

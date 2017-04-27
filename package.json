@@ -52,7 +52,6 @@
     "url": "https://github.com/baontp/nano-framework/issues"
   },
   "dependencies": {
-    "hashmap": "^2.1.0",
     "nano-log": "^1.0.3",
     "ws": "^2.3.1"
   },

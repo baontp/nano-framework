@@ -1,6 +1,7 @@
 'use strict';
 
 let ResponseMessage = require('./message').ResponseMessage;
+let NotifyMessage = require('./message').NotifyMessage;
 let UpdateMessage = require('./message').UpdateMessage;
 let PayloadType = require('./constants').PayloadType;
 let RequestType = require('./constants').RequestType;
@@ -14,7 +15,11 @@ MessageBuilder.buildResponse = (requestType, resultCode, payLoadType, payLoad) =
 };
 
 MessageBuilder.buildNotify = (notifyType, payLoad) => {
-    return new UpdateMessage(notifyType, PayloadType.JSON, payLoad);
+    return new NotifyMessage(notifyType, PayloadType.JSON, payLoad);
+};
+
+MessageBuilder.buildUpdate = (updateType, payloadType, payLoad) => {
+    return new UpdateMessage(updateType, payloadType, payLoad);
 };
 
 MessageBuilder.buildAuthResponse = (resultCode, sessionId, message) => {
@@ -46,6 +51,14 @@ MessageBuilder.buildUserActionNotify = function (action) {
         p: args
     };
     return MessageBuilder.buildNotify(NotifyType.USER_ACTION, payload);
+};
+
+MessageBuilder.buildUserActionResponse = function (resultCode, action, desc) {
+    let payload = {
+        a: action,
+        p: desc
+    };
+    return MessageBuilder.buildResponse(RequestType.USER_ACTION, resultCode, PayloadType.JSON, payload);
 };
 
 module.exports = MessageBuilder;

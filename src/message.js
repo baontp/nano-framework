@@ -85,17 +85,42 @@ class ResponseMessage extends Message {
 module.exports.ResponseMessage = ResponseMessage;
 
 /**
- * UpdateMessage
+ * NotifyMessage
  */
-class UpdateMessage extends Message {
-    constructor(requestType, payloadType, payload) {
-        super(MessageType.UPDATE, payloadType, payload);
-        this._updateType = requestType;
+class NotifyMessage extends Message {
+    constructor(notifyType, payloadType, payload) {
+        super(MessageType.NOTIFY, payloadType, payload);
+        this._notifyType = notifyType;
     }
 
     get payload() { return JSON.stringify(this._payload) };
+    get notifyType() { return this._notifyType; }
 
+    header2Bytes(data, startIndex) {
+        data[startIndex++] = this._type;
+        data[startIndex++] = this._notifyType;
+        data[startIndex++] = this._payloadType;
+        return startIndex;
+    }
+
+    getHeaderSize() {
+        return 3;
+    }
+}
+module.exports.NotifyMessage = NotifyMessage;
+
+/**
+ * UpdateMessage
+ */
+class UpdateMessage extends Message {
+    constructor(updateType, payloadType, payload) {
+        super(MessageType.UPDATE, payloadType, payload);
+        this._updateType = updateType;
+    }
+
+    get payload() { return JSON.stringify(this._payload) };
     get updateType() { return this._updateType; }
+
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;
         data[startIndex++] = this._updateType;

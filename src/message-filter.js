@@ -18,7 +18,7 @@ class MessageFilter {
             payLoad[i] = data[index++];
         }
 
-        return new RequestMessage(requestType, payloadType, payLoadSize, payLoad);
+        return new RequestMessage(requestType, payloadType, payLoad);
     }
 
     encode(message) {

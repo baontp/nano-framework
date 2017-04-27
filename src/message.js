@@ -8,16 +8,14 @@ let util = require('./util');
  * Base Message
  */
 class Message {
-    constructor(type, payloadType, payloadSize, payload) {
+    constructor(type, payloadType, payload) {
         this._type = type;
         this._payloadType = payloadType;
-        this._payloadSize = payloadSize;
         this._payload = payload;
     }
 
     get type() { return this._type };
     get payloadType() { return this._payloadType };
-    get payloadSize() { return this._payloadSize };
     get payload() { return this._payload };
 
     header2Bytes(data, startIndex) {
@@ -37,8 +35,8 @@ module.exports.Message = Message;
  * RequestMessage
  */
 class RequestMessage extends Message {
-    constructor(requestType, payloadType, payloadSize, payload) {
-        super(MessageType.REQUEST, payloadType, payloadSize, payload);
+    constructor(requestType, payloadType, payload) {
+        super(MessageType.REQUEST, payloadType, payload);
         this._requestType = requestType;
     }
 
@@ -63,7 +61,7 @@ module.exports.RequestMessage = RequestMessage;
  */
 class ResponseMessage extends Message {
     constructor(requestType, resultCode, payloadType, payload) {
-        super(MessageType.RESPONSE, payloadType, 0, payload);
+        super(MessageType.RESPONSE, payloadType, payload);
         this._requestType = requestType;
         this._resultCode = resultCode;
     }
@@ -90,16 +88,18 @@ module.exports.ResponseMessage = ResponseMessage;
  * UpdateMessage
  */
 class UpdateMessage extends Message {
-    constructor(requestType, resultCode, payloadType, payload) {
+    constructor(requestType, payloadType, payload) {
         super(MessageType.UPDATE, payloadType, payload);
         this._updateType = requestType;
     }
+
+    get payload() { return JSON.stringify(this._payload) };
 
     get updateType() { return this._updateType; }
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;
         data[startIndex++] = this._updateType;
-        data[startIndex++] = PayloadType.BINARY;
+        data[startIndex++] = this._payloadType;
         return startIndex;
     }
 

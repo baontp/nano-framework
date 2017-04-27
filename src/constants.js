@@ -30,6 +30,10 @@ ResultCode[ResultCode['REQUEST_FAILED'] = 4] = 'REQUEST_FAILED';
 ResultCode[ResultCode['INSUFFICIENT_MONEY'] = 5] = 'INSUFFICIENT_MONEY';
 ResultCode[ResultCode['SERVICE_UNAVAILABLE'] = 6] = 'SERVICE_UNAVAILABLE';
 ResultCode[ResultCode['SESSION_OVERRIDE'] = 7] = 'SESSION_OVERRIDE';
+ResultCode[ResultCode['SUCCESS_RECOVERED'] = 8] = 'SUCCESS_RECOVERED';
+ResultCode[ResultCode['UNKNOWN_ERROR'] = 9] = 'UNKNOWN_ERROR';
+ResultCode[ResultCode['CONNECTION_ERROR'] = 10] = 'CONNECTION_ERROR';
+ResultCode[ResultCode['RESOURCE_NOT_FOUND'] = 11] = 'RESOURCE_NOT_FOUND';
 
 let RequestType = {};
 exports.RequestType = RequestType;

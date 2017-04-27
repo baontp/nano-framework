@@ -9,12 +9,12 @@ let NotifyType = require('./constants').NotifyType;
 
 let MessageBuilder = {};
 
-MessageBuilder.buildResponseMessage = (requestType, resultCode, payLoadType, payLoad) => {
+MessageBuilder.buildResponse = (requestType, resultCode, payLoadType, payLoad) => {
     return new ResponseMessage(requestType, resultCode, payLoadType, payLoad);
 };
 
-MessageBuilder.buildNotifyMessage = (notifyType, payLoadType, payLoad) => {
-    return new ResponseMessage(notifyType, payLoadType, payLoad);
+MessageBuilder.buildNotify = (notifyType, payLoad) => {
+    return new UpdateMessage(notifyType, PayloadType.JSON, payLoad);
 };
 
 MessageBuilder.buildAuthResponse = (resultCode, sessionId, message) => {
@@ -22,7 +22,7 @@ MessageBuilder.buildAuthResponse = (resultCode, sessionId, message) => {
         sessionId: sessionId,
         message: message
     };
-    return MessageBuilder.buildResponseMessage(RequestType.AUTHENTICATE_USER, resultCode, PayloadType.JSON, payload);
+    return MessageBuilder.buildResponse(RequestType.AUTHENTICATE_USER, resultCode, PayloadType.JSON, payload);
 };
 
 MessageBuilder.buildRoomResponse = (requestType, resultCode, room, desc) => {
@@ -31,18 +31,21 @@ MessageBuilder.buildRoomResponse = (requestType, resultCode, room, desc) => {
         o: room.owner,
         n: room.name,
         m: room.maxUser,
-        d: !!desc ? desc : ''
-    } : '';
-    return MessageBuilder.buildResponseMessage(requestType, resultCode, PayloadType.JSON, payload);
+    } : {};
+    payload.d = desc ? desc : '';
+    return MessageBuilder.buildResponse(requestType, resultCode, PayloadType.JSON, payload);
 };
 
 MessageBuilder.buildUserActionNotify = function (action) {
-    let args = arguments.shift();
+    let args = [];
+    for (let i = 1; i < arguments.length; ++i) {
+        args[i - 1] = arguments[i];
+    }
     let payload = {
-        action: action,
-        params: args
+        a: action,
+        p: args
     };
-    return MessageBuilder.buildNotifyMessage(NotifyType.USER_ACTION, PayloadType.JSON, payload);
+    return MessageBuilder.buildNotify(NotifyType.USER_ACTION, payload);
 };
 
 module.exports = MessageBuilder;

@@ -128,7 +128,7 @@ class Server extends EventEmitter {
             try {
                 socket.send(this._messageFilter.encode(message));
             } catch (err) {
-                err && logger.error(`while send message to user ${this._alias} err: ${err}`);
+                err && logger.error(`while send message to user ${this.name} err: ${err}`);
             }
         };
 
@@ -151,7 +151,7 @@ class Server extends EventEmitter {
             if (!this._active) {
                 logger.info('Server is inactive, refuse request from client');
                 if (message.type == MessageType.REQUEST) {
-                    socket.sendMessage(MessageBuilder.buildResponseMessage(message.requestType, ResultCode.SERVICE_UNAVAILABLE));
+                    socket.sendMessage(MessageBuilder.buildResponse(message.requestType, ResultCode.SERVICE_UNAVAILABLE));
                 }
                 return;
             }

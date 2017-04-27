@@ -53,7 +53,7 @@ class Handler {
         if (requestHandler != null) {
             let user = socket.user;
             if (requestType != RequestType.AUTHENTICATE_USER && user === undefined) {
-                let message = MessageBuilder.buildResponseMessage(requestType, ResultCode.BAD_REQUEST, PayloadType.JSON, 'User is unauthenticated');
+                let message = MessageBuilder.buildResponse(requestType, ResultCode.BAD_REQUEST, PayloadType.JSON, 'User is unauthenticated');
                 socket.sendMessage(message);
                 return;
             }
@@ -72,7 +72,7 @@ class Handler {
         if (updateHandler != null) {
             let user = socket.user;
             if (user === undefined) {
-                let message = MessageBuilder.buildResponseMessage(updateType, ResultCode.BAD_REQUEST, PayloadType.JSON, 'User is unauthenticated');
+                let message = MessageBuilder.buildResponse(updateType, ResultCode.BAD_REQUEST, PayloadType.JSON, 'User is unauthenticated');
                 socket.sendMessage(message);
                 return;
             }
@@ -102,7 +102,7 @@ class Handler {
             .then((handleResult) => {
                 if (handleResult.code == ResultCode.SUCCESS) {
                     let message = MessageBuilder.buildAuthResponse(ResultCode.SUCCESS, socket.sessionId, 'User Authentication success!');
-                    user.send(message);
+                    user.sendMessage(message);
 
                     this._server.primaryLobby.handleUserJoin(user, handleResult);
 
@@ -113,7 +113,7 @@ class Handler {
 
                 if (!handleResult.skipResponse) {
                     let message = MessageBuilder.buildAuthResponse(ResultCode.AUTH_ERROR, 0, handleResult.message);
-                    user.send(message);
+                    user.sendMessage(message);
                     user.disconnect();
                 }
             });
@@ -127,8 +127,8 @@ class Handler {
      */
     _handleUserAction(socket, request) {
         let payload = request.payload;
-        let action = payload.action;
-        let params = payload.params;
+        let action = payload.a;
+        let params = payload.p;
         let user = socket.user;
         let room = user.room;
         if (room) {
@@ -136,11 +136,11 @@ class Handler {
                 params.unshift(user);
                 room[action].apply(room, params);
             } else {
-                user.send(MessageBuilder.buildResponseMessage(request.requestType, ResultCode.BAD_REQUEST, PayloadType.JSON,
+                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST, PayloadType.JSON,
                     `${action} action is not defined or not a function in room ${room.id}`));
             }
         } else {
-            user.send(MessageBuilder.buildResponseMessage(request.requestType(), ResultCode.BAD_REQUEST, PayloadType.JSON,
+            user.sendMessage(MessageBuilder.buildResponse(request.requestType(), ResultCode.BAD_REQUEST, PayloadType.JSON,
                 `User is not in any room`));
         }
     }
@@ -162,34 +162,43 @@ class Handler {
      * @private
      */
     _handleJoinRoom(socket, request) {
+        if (!!request.id) {
+            MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.BAD_REQUEST, null, 'Missing room id');
+            return;
+        }
+        let payload = request.payload;
         let user = socket.user;
-        let room = socket.room;
+        let room = user.room;
         let desc = '';
-        if(room === this._server.primaryLobby) {
+        if (room === this._server.primaryLobby) {
             let handleResult = new HandleResult();
             this._server.primaryLobby.handleUserLeave(user, handleResult);
 
-            if(handleResult.code == ResultCode.SUCCESS) {
-                let roomId = request.id;
+            if (handleResult.code == ResultCode.SUCCESS) {
+                let roomId = payload.id;
                 room = this._server._roomMap.get(roomId);
-                if(!!room) {
+                if (!!room) {
                     room.handleUserJoin(user, handleResult);
                     if (handleResult.code == ResultCode.SUCCESS) {
-                        MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.SUCCESS, room, 'Can not leave lobby');
+                        user.sendMessage(MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.SUCCESS, room));
+                        return;
                     } else {
                         desc = `Can not join room id ${roomId}`;
                     }
                 } else {
-                    desc = `Room ${roomId} does not exist`;
+                    let msg = MessageBuilder.buildResponse(RequestType.JOIN_ROOM, ResultCode.RESOURCE_NOT_FOUND, PayloadType.JSON, '');
+                    user.sendMessage(msg);
+                    return;
                 }
             } else {
                 desc = 'Can not leave lobby';
             }
         } else {
             desc = 'Already in room';
+            room.handleUserLeave(user, new HandleResult());
         }
 
-        MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.REQUEST_FAILED, room, desc);
+        user.sendMessage(MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.REQUEST_FAILED, room, desc));
     }
 
     /**
@@ -210,7 +219,7 @@ class Handler {
      */
     _handleFindRoom(socket, request) {
         let room = this._server.findRoom();
-        if(!!room) {
+        if (!!room) {
             let message = MessageBuilder.buildRoomResponse(RequestType.FIND_ROOM, ResultCode.SUCCESS, room);
             socket.sendMessage(message);
         } else {

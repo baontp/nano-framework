@@ -22,7 +22,7 @@ class User {
 
     get hasCleanup(){ return this._socket.deleted; }
 
-    send(message) {
+    sendMessage(message) {
         this._socket.sendMessage(message);
     }
 

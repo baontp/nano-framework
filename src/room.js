@@ -28,8 +28,7 @@ class Room extends EventEmitter {
     get name(){ return this._name};
     set name(name){ this._name = name};
 
-    _removeUser(user) {
-        user.cleanUp();
+    removeUser(user) {
         this._users.remove(user.name);
     }
 
@@ -44,7 +43,7 @@ class Room extends EventEmitter {
         if(!user) return;
         if(!!user.hasCleanup) return;
 
-        this._removeUser(user);
+        this.removeUser(user);
     }
 
     handleUserPause(user, handleResult) {

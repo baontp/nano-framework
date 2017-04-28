@@ -56,7 +56,7 @@ MessageBuilder.buildUserActionNotify = function (action) {
 MessageBuilder.buildUserActionResponse = function (resultCode, action, desc) {
     let payload = {
         a: action,
-        p: desc
+        d: desc
     };
     return MessageBuilder.buildResponse(RequestType.USER_ACTION, resultCode, PayloadType.JSON, payload);
 };

@@ -16,8 +16,8 @@ class Lobby extends Room {
     handleUserJoin(user, handleResult) {
         if (!user) return;
 
-        if (this.checkUserJoined(user.name)) {
-            let oldUser = this._users.get(user.name);
+        if (this.checkUserJoined(user.id)) {
+            let oldUser = this._users.get(user.id);
             let message = MessageBuilder.buildAuthResponse(ResultCode.SESSION_OVERRIDE, 0, 'Session is overrode');
             oldUser.sendMessage(message);
             this.removeUser(oldUser);

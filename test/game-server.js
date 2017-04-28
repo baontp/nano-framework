@@ -36,9 +36,9 @@ exports.start = () => {
     let gameServer = new GameServer(_cfg);
 
     let b = '======\t';
-    logger.info(b,b,b,b,b,b,b);
-    logger.info(b,b, 'START   ROOM   SERVICE\t', b,b);
-    logger.info(b,b,b,b,b,b,b);
+    logger.info(b, b, b, b, b, b, b);
+    logger.info(b, b, 'START   ROOM   SERVICE\t', b, b);
+    logger.info(b, b, b, b, b, b, b);
 
     gameServer.start();
 };

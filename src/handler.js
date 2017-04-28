@@ -127,7 +127,7 @@ class Handler {
     _handleUserAction(socket, request) {
         let payload = request.payload;
         let action = payload.a;
-        let params = payload.p;
+        let params = !!payload.p ? payload.p : [];
         let user = socket.user;
         let room = user.room;
         if (room) {

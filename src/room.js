@@ -2,6 +2,8 @@
 
 let EventEmitter = require('events');
 let util = require('./util');
+let MessageBuilder = require('./message-builder');
+let NotifyType = require('./constants').NotifyType;
 
 class Room extends EventEmitter {
     constructor(type) {
@@ -41,18 +43,24 @@ class Room extends EventEmitter {
     }
 
     findUserByName (name) {
-        this._users.get(name);
+        for (let user of this._users.values()) {
+            if(user.name == name) return user;
+        }
     }
 
-    removeUser(user) {
-        this._users.delete(user.name);
+    removeUser(user, notify) {
+        this._users.delete(user.id);
+        if (notify) {
+            this.broadcast(this._buildJoinLeaveNotify(user, false));
+        }
     }
 
     handleUserJoin(user, handleResult) {
         if(!user) return;
 
-        this._users.set(user.name, user);
+        this._users.set(user.id, user);
         user.room = this;
+        this.broadcast(this._buildJoinLeaveNotify(user, true));
     }
 
     handleUserLeave(user, handleResult) {
@@ -70,8 +78,20 @@ class Room extends EventEmitter {
 
     }
 
-    checkUserJoined(userName) {
-        return this._users.has(userName);
+    checkUserJoined(userId) {
+        return this._users.has(userId);
+    }
+
+    _buildJoinLeaveNotify(user, isJoin) {
+        let payload = {
+            i: this.id,
+            o: this.owner,
+            n: this.name,
+            m: this.maxUser,
+            u: user.name
+        };
+        // reMessageBuilder.buildResponse(requestType, resultCode, PayloadType.JSON, payload);
+        return MessageBuilder.buildNotify(isJoin ? NotifyType.USER_JOINED_ROOM : NotifyType.USER_LEFT_ROOM, payload);
     }
 }
 

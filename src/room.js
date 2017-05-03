@@ -3,20 +3,21 @@
 let EventEmitter = require('events');
 let util = require('./util');
 let MessageBuilder = require('./message-builder');
+let Domain = require('./domain');
 let NotifyType = require('./constants').NotifyType;
 
-class Room extends EventEmitter {
+class Room extends Domain {
     constructor(type) {
         super();
         this._id = util.generateNumber();
         this._owner = '';
         this._name = '';
         this._type = type;
-        this._users = new Map();
-        this._maxUser = 999999999;
     }
 
     get id() { return this._id};
+    set id(id) {this._id = id};
+
     get type() { return this._type};
     get server() { return this._server};
 
@@ -29,45 +30,22 @@ class Room extends EventEmitter {
     get name(){ return this._name};
     set name(name){ this._name = name};
 
-    broadcast(msg, excludes) {
-        if(!!excludes) {
-            let _users = Array.from(this._users.values()).filter(function(user){return excludes.indexOf(user) == -1;});
-            _users.forEach(function(user) {
-                user.sendMessage(msg);
-            });
-        } else {
-            for (let user of this._users.values()) {
-                user.sendMessage(msg);
-            }
-        }
-    }
-
-    findUserByName (name) {
-        for (let user of this._users.values()) {
-            if(user.name == name) return user;
-        }
-    }
-
-    removeUser(user, notify) {
-        this._users.delete(user.id);
-        if (notify) {
-            this.broadcast(this._buildJoinLeaveNotify(user, false));
-        }
-    }
 
     handleUserJoin(user, handleResult) {
-        if(!user) return;
+        if (!user) return;
 
-        this._users.set(user.id, user);
+        this.addUser(user);
         user.room = this;
         this.broadcast(this._buildJoinLeaveNotify(user, true));
     }
 
     handleUserLeave(user, handleResult) {
-        if(!user) return;
-        if(!!user.hasCleanup) return;
+        if (!user) return;
+        if (!!user.hasCleanup) return;
 
-        this.removeUser(user);
+        if (this.removeUser(user)) {
+            this.broadcast(this._buildJoinLeaveNotify(user, false));
+        }
     }
 
     handleUserPause(user, handleResult) {
@@ -76,10 +54,6 @@ class Room extends EventEmitter {
 
     handleUserResume(user, handleResult) {
 
-    }
-
-    checkUserJoined(userId) {
-        return this._users.has(userId);
     }
 
     _buildJoinLeaveNotify(user, isJoin) {

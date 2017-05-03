@@ -16,7 +16,7 @@ class Message {
 
     get type() { return this._type };
     get payloadType() { return this._payloadType };
-    get payload() { return this._payload };
+    get payloadRaw() { return this._payload };
 
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;

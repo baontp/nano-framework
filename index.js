@@ -5,6 +5,7 @@ exports.Logger = require('nano-log');
 exports.MessageBuilder = require('./src/message-builder');
 exports.Server = require('./src/server');
 exports.Services = require('./src/services');
+exports.BaseDomain = require('./src/domain');
 exports.BaseRoom = require('./src/room');
 exports.BaseUser = require('./src/user');
 

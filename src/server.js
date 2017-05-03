@@ -183,8 +183,8 @@ class Server extends EventEmitter {
 
     createRoom(type, maxUser) {
         let room = this._roomFactory.createRoom(type);
-        if(this.onRoomCreate) {
-            this.onRoomCreate(room);
+        if(this.onRoomCreated) {
+            this.onRoomCreated(room);
         }
         if(!!maxUser)
             room.maxUser = maxUser;

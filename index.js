@@ -8,6 +8,7 @@ exports.Services = require('./src/services');
 exports.BaseDomain = require('./src/domain');
 exports.BaseRoom = require('./src/room');
 exports.BaseUser = require('./src/user');
+exports.HandleResult = require('./src/handle-result');
 
 let constant = require('./src/constants');
 exports.ServiceType = constant.ServiceType;

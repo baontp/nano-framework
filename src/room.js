@@ -43,7 +43,7 @@ class Room extends Domain {
         if (!user) return;
         if (!!user.hasCleanup) return;
 
-        if (this.removeUser(user)) {
+        if (this.removeUser(user.id)) {
             this.broadcast(this._buildJoinLeaveNotify(user, false));
         }
     }

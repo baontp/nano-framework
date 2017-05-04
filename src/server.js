@@ -97,7 +97,7 @@ class Server extends EventEmitter {
         });
 
         this._socket.on('connection', this._onNewConnection.bind(this));
-        // this._handler.init();
+        this.emit('started');
     }
 
     _initPrimaryLobby() {

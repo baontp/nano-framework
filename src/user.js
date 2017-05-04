@@ -1,6 +1,6 @@
 'use strict';
 
-let logger = require('nano-log').createLogger('USER');
+let log = require('nano-log');
 let util = require('./util');
 
 class User {
@@ -11,19 +11,24 @@ class User {
         this._socket = socket;
         this._sessionId = socket.sessionId;
 
-        logger.prefix = name;
+        this._logger = log.createLogger('USER');
+        this._logger.prefix = name;
     }
 
     get room(){ return this._room };
     set room(room){ this._room = room };
 
     get name(){ return this._name };
-    set name(name){ return this._name = name };
+    set name(name){ this._name = name; this._logger.prefix = name; };
 
-    get hasCleanup(){ return this._socket.deleted; }
+    get hasCleanUp(){ return this._socket.deleted; }
 
     sendMessage(message) {
-        this._socket.sendMessage(message);
+        try {
+            this._socket.sendMessage(message);
+        } catch (err) {
+            err && this._logger.error(`while send message, err: ${err}`);
+        }
     }
 
     disconnect() {

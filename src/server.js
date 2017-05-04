@@ -125,11 +125,7 @@ class Server extends EventEmitter {
 
         // wrapper function to process message before let socket send message
         socket.sendMessage = (message) => {
-            try {
-                socket.send(this._messageFilter.encode(message));
-            } catch (err) {
-                err && logger.error(`while send message to user ${this.name} err: ${err}`);
-            }
+            socket.send(this._messageFilter.encode(message));
         };
 
         // create an identity per socket

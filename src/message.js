@@ -118,7 +118,14 @@ class UpdateMessage extends Message {
         this._updateType = updateType;
     }
 
-    get payload() { return JSON.stringify(this._payload) };
+    get payload() {
+        if (PayloadType.BINARY == this._payloadType) {
+            return this._payload;
+        } else {
+            return JSON.stringify(this._payload);
+        }
+    }
+
     get updateType() { return this._updateType; }
 
     header2Bytes(data, startIndex) {

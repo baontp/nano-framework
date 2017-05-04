@@ -2,9 +2,9 @@
  * Created by baonguyen on 4/13/2017.
  */
 let config = require('./config');
-let nano = require('../');
-let CustomUserAuthService = require('./server-impl/services/user-authen');
-let Room = require('./server-impl/GameRoom');
+let nano = require('../../index');
+let CustomUserAuthService = require('./user-authen');
+let Room = require('./game-room');
 let logger = nano.Logger.createLogger('SYSTEM');
 
 nano.Logger.setLevel('debug');

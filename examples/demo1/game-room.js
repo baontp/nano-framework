@@ -1,5 +1,5 @@
 'use strict';
-let nano = require('../../');
+let nano = require('../../index');
 let logger = nano.Logger.createLogger('ROOM');
 
 class Room extends nano.BaseRoom {

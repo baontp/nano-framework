@@ -19,6 +19,7 @@ let PayloadType = {};
 exports.PayloadType = PayloadType;
 PayloadType[PayloadType['JSON'] = 0] = 'JSON';
 PayloadType[PayloadType['BINARY'] = 1] = 'BINARY';
+PayloadType[PayloadType['NUMBER'] = 2] = 'NUMBER';
 
 
 let ResultCode = {};

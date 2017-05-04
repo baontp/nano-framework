@@ -3,6 +3,7 @@
 let MessageType = require('./constants').MessageType;
 let PayloadType = require('./constants').PayloadType;
 let util = require('./util');
+let logger = require('nano-log').createLogger('MESSAGE');
 
 /**
  * Base Message
@@ -14,9 +15,17 @@ class Message {
         this._payload = payload;
     }
 
-    get type() { return this._type };
-    get payloadType() { return this._payloadType };
-    get payloadRaw() { return this._payload };
+    get type() {
+        return this._type
+    };
+
+    get payloadType() {
+        return this._payloadType
+    };
+
+    get payloadRaw() {
+        return this._payload
+    };
 
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;
@@ -40,8 +49,13 @@ class RequestMessage extends Message {
         this._requestType = requestType;
     }
 
-    get requestType() { return this._requestType; }
-    get payload() { return JSON.parse(util.bin2String(this._payload)) };
+    get requestType() {
+        return this._requestType;
+    }
+
+    get payload() {
+        return JSON.parse(util.bin2String(this._payload))
+    };
 
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;
@@ -60,15 +74,23 @@ module.exports.RequestMessage = RequestMessage;
  * ResponseMessage
  */
 class ResponseMessage extends Message {
-    constructor(requestType, resultCode, payloadType, payload) {
-        super(MessageType.RESPONSE, payloadType, payload);
+    constructor(requestType, resultCode, payload) {
+        super(MessageType.RESPONSE, PayloadType.JSON, payload);
         this._requestType = requestType;
         this._resultCode = resultCode;
     }
 
-    get requestType() { return this._requestType; }
-    get resultCode() { return this._resultCode; }
-    get payload() { return JSON.stringify(this._payload) };
+    get requestType() {
+        return this._requestType;
+    }
+
+    get resultCode() {
+        return this._resultCode;
+    }
+
+    get payload() {
+        return JSON.stringify(this._payload)
+    };
 
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;
@@ -88,13 +110,18 @@ module.exports.ResponseMessage = ResponseMessage;
  * NotifyMessage
  */
 class NotifyMessage extends Message {
-    constructor(notifyType, payloadType, payload) {
-        super(MessageType.NOTIFY, payloadType, payload);
+    constructor(notifyType, payload) {
+        super(MessageType.NOTIFY, PayloadType.JSON, payload);
         this._notifyType = notifyType;
     }
 
-    get payload() { return JSON.stringify(this._payload) };
-    get notifyType() { return this._notifyType; }
+    get payload() {
+        return JSON.stringify(this._payload)
+    };
+
+    get notifyType() {
+        return this._notifyType;
+    }
 
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;
@@ -116,17 +143,46 @@ class UpdateMessage extends Message {
     constructor(updateType, payloadType, payload) {
         super(MessageType.UPDATE, payloadType, payload);
         this._updateType = updateType;
-    }
 
-    get payload() {
-        if (PayloadType.BINARY == this._payloadType) {
-            return this._payload;
-        } else {
-            return JSON.stringify(this._payload);
+        if (payloadType == PayloadType.NUMBER) {
+            if(typeof payload === 'number') {
+                this._numberSize = 1;
+                if (payload > 255) {
+                    this._numberSize = 4;
+                    this._payload = new Uint8Array(4);
+                    util.intToBytes(payload, this._payload, 0);
+                }
+            } else {
+                logger.warn('Update Message:', 'Payload Type input is NUMBER, but actual typeof payload is not. Convert Payload Type to BINARY');
+                this._payloadType = PayloadType.BINARY;
+            }
         }
     }
 
-    get updateType() { return this._updateType; }
+    get payload() {
+        switch (this._payloadType) {
+            case PayloadType.NUMBER:
+            case PayloadType.BINARY:
+                return this._payload;
+            default:
+                return JSON.stringify(this._payload);
+        }
+    }
+
+    get payloadSize() {
+        switch (this._payloadType) {
+            case PayloadType.NUMBER:
+                return this._numberSize;
+            case PayloadType.BINARY:
+                return this._payload.length;
+            default:
+                return JSON.stringify(this._payload).length;
+        }
+    }
+
+    get updateType() {
+        return this._updateType;
+    }
 
     header2Bytes(data, startIndex) {
         data[startIndex++] = this._type;

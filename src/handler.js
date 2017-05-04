@@ -52,7 +52,7 @@ class Handler {
         if (requestHandler != null) {
             let user = socket.user;
             if (requestType != RequestType.AUTHENTICATE_USER && user === undefined) {
-                let message = MessageBuilder.buildResponse(requestType, ResultCode.BAD_REQUEST, PayloadType.JSON, 'User is unauthenticated');
+                let message = MessageBuilder.buildResponse(requestType, ResultCode.BAD_REQUEST, 'User is unauthenticated');
                 socket.sendMessage(message);
                 return;
             }
@@ -71,7 +71,7 @@ class Handler {
         if (updateHandler != null) {
             let user = socket.user;
             if (user === undefined) {
-                let message = MessageBuilder.buildResponse(updateType, ResultCode.BAD_REQUEST, PayloadType.JSON, 'User is unauthenticated');
+                let message = MessageBuilder.buildResponse(updateType, ResultCode.BAD_REQUEST, 'User is unauthenticated');
                 socket.sendMessage(message);
                 return;
             }
@@ -135,11 +135,11 @@ class Handler {
                 params.unshift(user);
                 room[action].apply(room, params);
             } else {
-                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST, PayloadType.JSON,
+                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST,
                     `${action} action is not defined or not a function in room ${room.id}`));
             }
         } else {
-            user.sendMessage(MessageBuilder.buildResponse(request.requestType(), ResultCode.BAD_REQUEST, PayloadType.JSON,
+            user.sendMessage(MessageBuilder.buildResponse(request.requestType(), ResultCode.BAD_REQUEST,
                 `User is not in any room`));
         }
     }
@@ -185,7 +185,7 @@ class Handler {
                         desc = `Can not join room id ${roomId}`;
                     }
                 } else {
-                    let msg = MessageBuilder.buildResponse(RequestType.JOIN_ROOM, ResultCode.RESOURCE_NOT_FOUND, PayloadType.JSON, '');
+                    let msg = MessageBuilder.buildResponse(RequestType.JOIN_ROOM, ResultCode.RESOURCE_NOT_FOUND, '');
                     user.sendMessage(msg);
                     return;
                 }

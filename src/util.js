@@ -1,4 +1,4 @@
-'use strict'; 
+'use strict';
 
 exports.generateNumber = () => {
     let val = Math.random() * 10000;
@@ -37,7 +37,7 @@ exports.base64_encode = function (data) {
         h4 = bits & 0x3f;
 
         tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
-    } while(i < data.length);
+    } while (i < data.length);
 
     enc = tmp_arr.join('');
 
@@ -64,11 +64,21 @@ exports.string2bin = function (str) {
     return data;
 };
 
-exports.bytesToInteger = function (bytes, offset) {
+exports.bytesToInt = function (bytes, offset) {
     let value = 0;
     for (let i = 0; i < 4; i++) {
         value = (value << 8) + (bytes[offset + i] & 0xff);
     }
 
     return value;
+};
+
+exports.intToBytes = function (number, bytes, offset) {
+    let _offset = offset || 0;
+    bytes[_offset] = number >>> 24;
+    bytes[_offset + 1] = number >>> 16;
+    bytes[_offset + 2] = number >>> 8;
+    bytes[_offset + 3] = number;
+
+    return _offset + 4;
 };

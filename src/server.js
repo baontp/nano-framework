@@ -92,7 +92,7 @@ class Server extends EventEmitter {
         this._socket = new WebSocket.Server({
             port: port,
             perMessageDeflate: false
-        }, function () {
+        }, () => {
             logger.info(`Listen connection on port ${port}`);
         });
 

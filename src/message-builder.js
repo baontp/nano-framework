@@ -1,5 +1,6 @@
 'use strict';
 
+let RequestMessage = require('./message').RequestMessage;
 let ResponseMessage = require('./message').ResponseMessage;
 let NotifyMessage = require('./message').NotifyMessage;
 let UpdateMessage = require('./message').UpdateMessage;
@@ -9,6 +10,18 @@ let NotifyType = require('./constants').NotifyType;
 
 
 let MessageBuilder = {};
+
+MessageBuilder.buildActionRequest = function (action, args) {
+    if(!!args){
+        return JSON.stringify({a: action, p: args});
+    } else {
+        return JSON.stringify({a: action});
+    }
+};
+
+MessageBuilder.buildRequest = (sessionId, requestType, payLoad) => {
+    return new RequestMessage(sessionId, requestType, payLoad);
+};
 
 MessageBuilder.buildResponse = (requestType, resultCode, payLoad) => {
     return new ResponseMessage(requestType, resultCode, payLoad);

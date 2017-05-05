@@ -16,15 +16,15 @@ class Message {
     }
 
     get type() {
-        return this._type
+        return this._type;
     };
 
     get payloadType() {
-        return this._payloadType
+        return this._payloadType;
     };
 
     get payloadRaw() {
-        return this._payload
+        return this._payload;
     };
 
     header2Bytes(data, startIndex) {
@@ -89,7 +89,7 @@ class ResponseMessage extends Message {
     }
 
     get payload() {
-        return JSON.stringify(this._payload)
+        return JSON.stringify(this._payload);
     };
 
     header2Bytes(data, startIndex) {

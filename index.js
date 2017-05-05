@@ -8,6 +8,7 @@ exports.MasterServer = require('./src/master-server/master-server');
 exports.Services = require('./src/services');
 exports.BaseDomain = require('./src/domain');
 exports.BaseRoom = require('./src/room');
+exports.BaseLobby = require('./src/lobby');
 exports.BaseUser = require('./src/user');
 exports.HandleResult = require('./src/handle-result');
 

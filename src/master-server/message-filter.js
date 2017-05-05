@@ -12,12 +12,12 @@ let util = require('../util');
 
 class MessageFilter {
     decode(data) {
-        if(type == MessageType.RESPONSE) {
-            return new ResponseMessage(data);
-        } else if(type == MessageType.NOTIFY) {
-            return new NotifyMessage(data);
-        } else if(type == MessageType.UPDATE) {
-            return new UpdateMessage(data);
+        if(data[0] == MessageType.RESPONSE) {
+            return new ResponseMessage(data, 0);
+        } else if(data[0] == MessageType.NOTIFY) {
+            return new NotifyMessage(data, 0);
+        } else if(data[0] == MessageType.UPDATE) {
+            return new UpdateMessage(data, 0);
         }
     }
 

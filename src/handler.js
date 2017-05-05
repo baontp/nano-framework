@@ -95,6 +95,7 @@ class Handler {
             return;
         }
 
+
         let handleResult = new HandleResult();
         let user = this._server.userFactory.createUser(userName, socket, null);
         this._server.services.getService(ServiceType.USER_AUTH).authenticateUser(user, authData, handleResult)

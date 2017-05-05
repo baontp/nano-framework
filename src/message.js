@@ -54,7 +54,7 @@ class RequestMessage extends Message {
     }
 
     get payload() {
-        return JSON.parse(util.bin2String(this._payload))
+        return JSON.parse(util.bin2String(this._payload));
     };
 
     header2Bytes(data, startIndex) {

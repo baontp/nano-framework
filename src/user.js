@@ -15,6 +15,9 @@ class User {
         this._logger.prefix = name;
     }
 
+    get id(){ return this._id };
+    set id(id){ return this._id = id };
+
     get room(){ return this._room };
     set room(room){ this._room = room };
 

@@ -13,14 +13,14 @@ let MessageBuilder = {};
 
 MessageBuilder.buildActionRequest = function (action, args) {
     if(!!args){
-        return JSON.stringify({a: action, p: args});
+        return {a: action, p: args};
     } else {
-        return JSON.stringify({a: action});
+        return {a: action};
     }
 };
 
-MessageBuilder.buildRequest = (sessionId, requestType, payLoad) => {
-    return new RequestMessage(sessionId, requestType, payLoad);
+MessageBuilder.buildRequest = (requestType, payLoad) => {
+    return new RequestMessage(requestType, PayloadType.JSON, payLoad);
 };
 
 MessageBuilder.buildResponse = (requestType, resultCode, payLoad) => {

@@ -18,7 +18,7 @@ class UpdateMessage extends BaseUpdateMessage {
         for (let i = 0; i < payLoadSize; i++) {
             payLoad[i] = responseBytes[startIndex + i];
         }
-        super(updateType, payLoad);
+        super(updateType, payLoadType, payLoad);
 
         if (this._payloadType == PayloadType.NUMBER) {
             if (payLoadSize > 1) {

@@ -11,6 +11,7 @@ let Lobby = require('./lobby');
 let MessageFilter = require('./message-filter');
 let MessageBuilder = require('./message-builder');
 let MessageType = require('./constants').MessageType;
+let RequestType = require('./constants').RequestType;
 let ResultCode = require('./constants').ResultCode;
 let Services = require('./services');
 
@@ -160,7 +161,13 @@ class Server extends EventEmitter {
                     this._handler.onUpdateReceived(socket, message);
                 }
             } catch (err) {
-                err && logger.error(`While process message ${message} error ${err}`);
+                if (message.type == MessageType.REQUEST) {
+                    let requestStr = RequestType[message.requestType] ? RequestType[message.requestType] : message.requestType;
+                    err && logger.error(`While process request ${requestStr} error ${err}`);
+                } else if (message.type == MessageType.UPDATE) {
+                    err && logger.error(`While process update ${message.updateType} error ${err}`);
+                }
+
             }
         });
 
@@ -170,7 +177,7 @@ class Server extends EventEmitter {
                 logger.info(`Close session ${socket.sessionId}`);
                 this._handler.onSocketClosed(socket);
             } catch (err) {
-                err && logger.error(`While handling close socket `);
+                err && logger.error(`While handling close socket err: ${err}`);
             }
         });
 

@@ -7,6 +7,8 @@ class Domain {
         this._maxUser = maxUser || 999999999;
     }
 
+    get isFull(){ return this._users.size >= this._maxUser; }
+
     broadcast(msg, excludes) {
         if (!!excludes) {
             let _users = Array.from(this._users.values()).filter(function (user) {
@@ -32,16 +34,18 @@ class Domain {
         }
     }
 
-    checkUserJoined(userId) {
-        return this._users.has(userId);
+    checkUserJoined(user) {
+        return this._users.has(user.id);
     }
 
-    addUser(user) {
+    _addUser(user) {
+        if(this.isFull) return false;
         this._users.set(user.id, user);
+        return true;
     }
 
-    removeUser(userId) {
-        return this._users.delete(userId);
+    _removeUser(user) {
+        return this._users.delete(user.id);
     }
 }
 

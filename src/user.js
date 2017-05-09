@@ -10,6 +10,7 @@ class User {
         this._name = name;
         this._socket = socket;
         this._sessionId = socket.sessionId;
+        this._properties = new Map();
 
         this._logger = log.createLogger('USER');
         this._logger.prefix = name;
@@ -25,6 +26,10 @@ class User {
     set name(name){ this._name = name; this._logger.prefix = name; };
 
     get hasCleanUp(){ return this._socket.deleted; }
+
+    getProp(key) {return this._properties.get(key); }
+    setProp(key, value) { this._properties.set(key, value); return this;}
+    deleteProp(key) { return this._properties.delete(key); }
 
     sendMessage(message) {
         try {

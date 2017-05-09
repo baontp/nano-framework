@@ -7,7 +7,7 @@ let UpdateMessage = require('./message').UpdateMessage;
 let PayloadType = require('./constants').PayloadType;
 let RequestType = require('./constants').RequestType;
 let NotifyType = require('./constants').NotifyType;
-
+let logger = require('nano-log').createLogger('MESSAGE_BUILDER');
 
 let MessageBuilder = {};
 
@@ -54,15 +54,35 @@ MessageBuilder.buildRoomResponse = (requestType, resultCode, room, desc) => {
     return MessageBuilder.buildResponse(requestType, resultCode, payload);
 };
 
-MessageBuilder.buildUserActionNotify = function (action) {
+MessageBuilder.buildUserActionNotify = function (user, action) {
+    let _user, _action;
     let args = [];
-    for (let i = 1; i < arguments.length; ++i) {
-        args[i - 1] = arguments[i];
+    let payload;
+    if(typeof user === 'string') {
+        _action = user;
+        for (let i = 1; i < arguments.length; ++i) {
+            args[i - 1] = arguments[i];
+        }
+        payload = {
+            a: _action,
+            p: args
+        };
+    } else if(typeof user === 'object') {
+        _user = user;
+        _action = action;
+        for (let i = 2; i < arguments.length; ++i) {
+            args[i - 2] = arguments[i];
+        }
+        payload = {
+            uid: user.id,
+            a: _action,
+            p: args
+        };
+    } else {
+        logger.warn('Can not build user action notify');
+        return;
     }
-    let payload = {
-        a: action,
-        p: args
-    };
+
     return MessageBuilder.buildNotify(NotifyType.USER_ACTION, payload);
 };
 

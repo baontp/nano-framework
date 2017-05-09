@@ -5,12 +5,14 @@ let util = require('./util');
 let User = require('./user');
 let HandleResult = require('./handle-result');
 let MessageBuilder = require('./message-builder');
+let logger = require('nano-log').createLogger('HANDLER');
 
 let RequestType = constants.RequestType;
 let PayloadType = constants.PayloadType;
 let ResultCode = constants.ResultCode;
 let MessageType = constants.MessageType;
 let ServiceType = constants.ServiceType;
+let RoomType = constants.RoomType;
 
 class Handler {
     constructor(server) {
@@ -34,9 +36,9 @@ class Handler {
         let room = user ? user.room : null;
         if (room) {
             if (socket.recoverytime > 0) {
-                room.handleUserPause(user);
+                room.handleUserPaused(user);
             } else {
-                room.handleUserLeave(user);
+                room.handleUserLeave(user, new HandleResult());
             }
         }
     }
@@ -132,13 +134,21 @@ class Handler {
         let user = socket.user;
         let room = user.room;
         if (room) {
-            if (room[action] !== undefined && typeof room[action] === 'function') {
-                params.unshift(user);
-                room[action].apply(room, params);
-            } else {
-                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST,
-                    `${action} action is not defined or not a function in room ${room.id}`));
+            let roomStr = room.type == RoomType.LOBBY ? 'lobby' : 'room';
+            let adaptor = room.adaptor;
+            if (!adaptor) {
+                logger.warn(`Room adaptor in ${roomStr} ${room.id} is null`);
+                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.REQUEST_FAILED,
+                    `${action} action can not handled in ${roomStr} ${room.id}`));
+                return;
             }
+            if(!adaptor[action] || typeof adaptor[action] !== 'function') {
+                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST,
+                    `${action} action is not defined or not a function in room adaptor of ${roomStr} ${room.id}`));
+                return;
+            }
+            params.unshift(user);
+            adaptor[action].apply(adaptor, params);
         } else {
             user.sendMessage(MessageBuilder.buildResponse(request.requestType(), ResultCode.BAD_REQUEST,
                 `User is not in any room`));
@@ -170,10 +180,9 @@ class Handler {
         let user = socket.user;
         let room = user.room;
         let desc = '';
+        let handleResult = new HandleResult();
         if (room === this._server.primaryLobby) {
-            let handleResult = new HandleResult();
             this._server.primaryLobby.handleUserLeave(user, handleResult);
-
             if (handleResult.code == ResultCode.SUCCESS) {
                 let roomId = payload.id;
                 room = this._server._roomMap.get(roomId);
@@ -198,7 +207,9 @@ class Handler {
             room.handleUserLeave(user, new HandleResult());
         }
 
-        user.sendMessage(MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.REQUEST_FAILED, room, desc));
+        if(!handleResult.skipResponse) {
+            user.sendMessage(MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.REQUEST_FAILED, room, desc));
+        }
     }
 
     /**

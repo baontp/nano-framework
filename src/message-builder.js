@@ -20,6 +20,7 @@ MessageBuilder.buildActionRequest = function (action, args) {
 };
 
 MessageBuilder.buildRequest = (requestType, payLoad) => {
+    return new RequestMessage(requestType, PayloadType.JSON, payLoad || {});
 };
 
 MessageBuilder.buildResponse = (requestType, resultCode, payLoad) => {

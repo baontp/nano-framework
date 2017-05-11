@@ -20,19 +20,18 @@ MessageBuilder.buildActionRequest = function (action, args) {
 };
 
 MessageBuilder.buildRequest = (requestType, payLoad) => {
-    return new RequestMessage(requestType, PayloadType.JSON, payLoad);
 };
 
 MessageBuilder.buildResponse = (requestType, resultCode, payLoad) => {
-    return new ResponseMessage(requestType, resultCode, payLoad);
+    return new ResponseMessage(requestType, resultCode, payLoad || {});
 };
 
 MessageBuilder.buildNotify = (notifyType, payLoad) => {
-    return new NotifyMessage(notifyType, payLoad);
+    return new NotifyMessage(notifyType, payLoad || {});
 };
 
 MessageBuilder.buildUpdate = (updateType, payLoadType, payLoad) => {
-    return new UpdateMessage(updateType, payLoadType, payLoad);
+    return new UpdateMessage(updateType, payLoadType || PayloadType.JSON, payLoad || {});
 };
 
 MessageBuilder.buildAuthResponse = (resultCode, sessionId, message) => {

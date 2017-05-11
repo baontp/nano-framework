@@ -27,7 +27,7 @@ MessageBuilder.buildActionRequest = function (action, args) {
 };
 
 MessageBuilder.buildRequest = (requestType, payLoad) => {
-    return new RequestMessage(requestType, PayloadType.JSON, payLoad);
+    return new RequestMessage(requestType, PayloadType.JSON, payLoad || {});
 };
 
 module.exports = MessageBuilder;

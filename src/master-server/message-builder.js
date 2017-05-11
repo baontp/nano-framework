@@ -10,7 +10,7 @@ let MessageBuilder = {};
 
 MessageBuilder.buildServerAuthRequest = function (key) {
     return MessageBuilder.buildRequest(RequestType.AUTHENTICATE_USER, {
-        user: 'server',
+        user: 'server_' + Math.random() * 100000,
         authData: {
             isServer: true,
             key: key

@@ -3,3 +3,4 @@
 
 # Dependences folder
 /node_modules
+*.log

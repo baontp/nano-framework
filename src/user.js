@@ -6,6 +6,7 @@ let util = require('./util');
 class User {
     constructor(name, socket, room) {
         this._id = util.generateNumber();
+        this._lobby = null;
         this._room = room;
         this._name = name;
         this._socket = socket;
@@ -20,7 +21,7 @@ class User {
     set id(id){ return this._id = id };
 
     get room(){ return this._room };
-    set room(room){ this._room = room };
+    get lobby(){ return this._lobby; }
 
     get name(){ return this._name };
     set name(name){ this._name = name; this._logger.prefix = name; };

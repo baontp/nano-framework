@@ -33,12 +33,12 @@ class Handler {
 
     onSocketClosed(socket) {
         let user = socket.user;
-        let room = user ? user.room : null;
-        if (room) {
+        let lobby = user ? user.lobby : null;
+        if (lobby) {
             if (socket.recoverytime > 0) {
-                room.handleUserPaused(user);
+                lobby.handleUserPaused(user);
             } else {
-                room.handleUserLeave(user, new HandleResult());
+                lobby.handleUserLeave(user, new HandleResult());
             }
         }
     }
@@ -53,12 +53,14 @@ class Handler {
         let requestHandler = this._requestHandlerMap.get(requestType);
         if (requestHandler != null) {
             let user = socket.user;
-            if (requestType != RequestType.AUTHENTICATE_USER && user === undefined) {
+            if (requestType == RequestType.AUTHENTICATE_USER && !user) {
+                requestHandler.call(this, socket, message);
+            } else if (!!user) {
+                requestHandler.call(this, user, message);
+            } else {
                 let message = MessageBuilder.buildResponse(requestType, ResultCode.BAD_REQUEST, 'User is unauthenticated');
                 socket.sendMessage(message);
-                return;
             }
-            requestHandler.call(this, socket, message);
         }
     }
 
@@ -77,7 +79,7 @@ class Handler {
                 socket.sendMessage(message);
                 return;
             }
-            updateHandler.call(this, socket, message);
+            updateHandler.call(this, user, message);
         }
     }
 
@@ -96,7 +98,6 @@ class Handler {
             socket.sendMessage(message);
             return;
         }
-
 
         let handleResult = new HandleResult();
         let user = this._server.userFactory.createUser(userName, socket, null);
@@ -123,70 +124,72 @@ class Handler {
 
     /**
      *
-     * @param {WebSocket} socket
+     * @param {User} user
      * @param {RequestMessage} request
      * @private
      */
-    _handleUserAction(socket, request) {
+    _handleUserAction(user, request) {
         let payload = request.payload;
         let action = payload.a;
         let params = !!payload.p ? payload.p : [];
-        let user = socket.user;
-        let room = user.room;
-        if (room) {
-            let roomStr = room.type == RoomType.LOBBY ? 'lobby' : 'room';
-            let adaptor = room.adaptor;
-            if (!adaptor) {
-                logger.warn(`Room adaptor in ${roomStr} ${room.id} is null`);
-                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.REQUEST_FAILED,
-                    `${action} action can not handled in ${roomStr} ${room.id}`));
+        let location = user.room;
+        let locationStr = 'room';
+        if (!location) {
+            if (!user.lobby) {
+                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST, `User is not in any room/lobby`));
                 return;
             }
-            if(!adaptor[action] || typeof adaptor[action] !== 'function') {
-                user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST,
-                    `${action} action is not defined or not a function in room adaptor of ${roomStr} ${room.id}`));
-                return;
-            }
-            params.unshift(user);
-            adaptor[action].apply(adaptor, params);
-        } else {
-            user.sendMessage(MessageBuilder.buildResponse(request.requestType(), ResultCode.BAD_REQUEST,
-                `User is not in any room`));
+            location = user.lobby;
+            locationStr = 'lobby';
         }
+
+        let adaptor = location.adaptor;
+        if (!adaptor) {
+            logger.warn(`Adaptor in ${locationStr} ${location.id} is null`);
+            user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.REQUEST_FAILED,
+                `${action} action can not handled in ${locationStr} ${location.id}`));
+            return;
+        }
+        if (!adaptor[action] || typeof adaptor[action] !== 'function') {
+            user.sendMessage(MessageBuilder.buildResponse(request.requestType, ResultCode.BAD_REQUEST,
+                `${action} action is not defined or not a function in ${locationStr} adaptor of ${locationStr} ${location.id}`));
+            return;
+        }
+        params.unshift(user);
+        adaptor[action].apply(adaptor, params);
     }
 
     /**
      *
-     * @param {WebSocket} socket
+     * @param {User} user
      * @param {RequestMessage} request
      * @private
      */
-    _handleCreateRoom(socket, request) {
+    _handleCreateRoom(user, request) {
 
     }
 
     /**
      *
-     * @param {WebSocket} socket
+     * @param {User} user
      * @param {RequestMessage} request
      * @private
      */
-    _handleJoinRoom(socket, request) {
+    _handleJoinRoom(user, request) {
         if (!!request.id) {
             MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.BAD_REQUEST, null, 'Missing room id');
             return;
         }
         let payload = request.payload;
-        let user = socket.user;
-        let room = user.room;
         let desc = '';
         let handleResult = new HandleResult();
-        if (room === this._server.primaryLobby) {
-            this._server.primaryLobby.handleUserLeave(user, handleResult);
-            if (handleResult.code == ResultCode.SUCCESS) {
+        let lobby = user.lobby;
+        if (lobby) {
+            let room = user.room;
+            if (!room) {
                 let roomId = payload.id;
-                room = this._server._roomMap.get(roomId);
-                if (!!room) {
+                room = lobby.findRoom(roomId);
+                if (room) {
                     room.handleUserJoin(user, handleResult);
                     if (!handleResult.skipResponse && handleResult.code == ResultCode.SUCCESS) {
                         user.sendMessage(MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.SUCCESS, room));
@@ -200,42 +203,49 @@ class Handler {
                     return;
                 }
             } else {
-                desc = 'Can not leave lobby';
+                desc = 'Already in room';
+                room.handleUserLeave(user, new HandleResult());
             }
         } else {
-            desc = 'Already in room';
-            room.handleUserLeave(user, new HandleResult());
+            desc = 'Join lobby first';
         }
 
-        if(!handleResult.skipResponse) {
+        if (!handleResult.skipResponse) {
             user.sendMessage(MessageBuilder.buildRoomResponse(RequestType.JOIN_ROOM, ResultCode.REQUEST_FAILED, room, desc));
         }
     }
 
     /**
      *
-     * @param {WebSocket} socket
+     * @param {User} user
      * @param {RequestMessage} request
      * @private
      */
-    _handleLeaveRoom(socket, request) {
+    _handleLeaveRoom(user, request) {
 
     }
 
     /**
      *
-     * @param {WebSocket} socket
+     * @param {User} user
      * @param {RequestMessage} request
      * @private
      */
-    _handleFindRoom(socket, request) {
-        let room = this._server.findRoom();
+    _handleFindRoom(user, request) {
+        let lobby = user.lobby;
+        if (!lobby) {
+            let message = MessageBuilder.buildRoomResponse(RequestType.FIND_ROOM, ResultCode.REQUEST_FAILED, 'Join lobby first');
+            user.sendMessage(message);
+            return;
+        }
+
+        let room = lobby.findRoom();
         if (!!room) {
             let message = MessageBuilder.buildRoomResponse(RequestType.FIND_ROOM, ResultCode.SUCCESS, room);
-            socket.sendMessage(message);
+            user.sendMessage(message);
         } else {
             let message = MessageBuilder.buildRoomResponse(RequestType.FIND_ROOM, ResultCode.REQUEST_FAILED, null);
-            socket.sendMessage(message);
+            user.sendMessage(message);
         }
     }
 }

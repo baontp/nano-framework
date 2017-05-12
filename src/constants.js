@@ -51,6 +51,8 @@ exports.NotifyType = NotifyType;
 NotifyType[NotifyType['USER_ACTION'] = 1] = 'USER_ACTION';
 NotifyType[NotifyType['USER_JOINED_ROOM'] = 2] = 'USER_JOINED_ROOM';
 NotifyType[NotifyType['USER_LEFT_ROOM'] = 3] = 'USER_LEFT_ROOM';
+NotifyType[NotifyType['USER_JOINED_LOBBY'] = 4] = 'USER_JOINED_LOBBY';
+NotifyType[NotifyType['USER_LEFT_LOBBY'] = 5] = 'USER_LEFT_LOBBY';
 
 let ServiceType = {};
 exports.ServiceType = ServiceType;

@@ -25,10 +25,10 @@ class Server extends EventEmitter {
         this._roomFactory = RoomFactory;
         this._userFactory = UserFactory;
         this._services = new Services();
+        this._clientSockets = new Map();
         this._parseConfig(config);
 
         this._lobbyMap = new Map();
-        this._roomMap = new Map();
 
         if (!this._port)
             throw new Error('Port can not null or undefined');
@@ -37,6 +37,8 @@ class Server extends EventEmitter {
     get services() {
         return this._services
     }
+
+    get clientSockets() { return this._clientSockets; }
 
     /**
      *
@@ -104,9 +106,9 @@ class Server extends EventEmitter {
     _initPrimaryLobby() {
         let lobby;
         if (this._roomFactory.createLobby) {
-            lobby = this._roomFactory.createLobby();
+            lobby = this._roomFactory.createLobby(this);
         } else {
-            lobby = new Lobby();
+            lobby = new Lobby(this);
         }
 
         this._lobbyMap.set(0, lobby);
@@ -183,22 +185,6 @@ class Server extends EventEmitter {
 
         this._handler.onSocketConnected(socket);
     }
-
-    createRoom(type, maxUser) {
-        let room = this._roomFactory.createRoom(type);
-        room.maxUser = !!maxUser ? maxUser : room.maxUser;
-        this.emit('room-created', room);
-        this._roomMap.set(room.id, room);
-        return room;
-    }
-
-    findRoom() {
-        if (this._roomMap.size <= 0) return null;
-
-        let entry = this._roomMap.entries().next();
-        let room = entry.done ? null : entry.value[1];
-        return room;
-    }
 }
 
 let UserFactory = {
@@ -208,8 +194,8 @@ let UserFactory = {
 };
 
 let RoomFactory = {
-    createLobby() {
-        return new Lobby();
+    createLobby(server) {
+        return new Lobby(server);
     },
 
     createRoom(type) {

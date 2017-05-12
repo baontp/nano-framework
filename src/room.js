@@ -12,12 +12,13 @@ let log = require('nano-log');
 class Room extends Domain {
     constructor(type) {
         super();
-        this._id = util.generateNumber();
         this._owner = '';
         this._name = '';
         this._type = type;
         this._adaptor = new RoomAdaptor();
+
         this._logger = log.createLogger('ROOM');
+        this._logger.prefix = `${this._id}`;
     }
 
     get id() { return this._id};
@@ -25,9 +26,6 @@ class Room extends Domain {
 
     get type() { return this._type};
     get server() { return this._server};
-
-    get maxUser(){ return this._maxUser};
-    set maxUser(maxUser){ this._maxUser = maxUser};
 
     get owner(){ return this._owner};
     set owner(owner){ this._owner = owner};
@@ -43,8 +41,15 @@ class Room extends Domain {
     handleUserJoin(user, handleResult) {
         if (!user) return;
 
-        if(this.checkUserJoined(user) || this.isFull) {
+        if(this.checkUserJoined(user)) {
             handleResult.code = ResultCode.REQUEST_FAILED;
+            handleResult.msg = 'User is already in room';
+            return;
+        }
+
+        if(this.isFull) {
+            handleResult.code = ResultCode.REQUEST_FAILED;
+            handleResult.msg = 'Room is full';
             return;
         }
 
@@ -90,7 +95,7 @@ class Room extends Domain {
 
     addUser(user, notify) {
         if(this._addUser(user)) {
-            user.room = this;
+            user._room = this;
             if(notify) {
                 this.broadcast(this._buildJoinLeaveNotify(user, true));
             }
@@ -101,7 +106,7 @@ class Room extends Domain {
 
     removeUser(user, notify) {
         if(this._removeUser(user)) {
-            user.room = null;
+            user._room = null;
             if(notify) {
                 this.broadcast(this._buildJoinLeaveNotify(user, false));
             }
@@ -118,7 +123,6 @@ class Room extends Domain {
             m: this.maxUser,
             u: user.name
         };
-        // reMessageBuilder.buildResponse(requestType, resultCode, PayloadType.JSON, payload);
         return MessageBuilder.buildNotify(isJoin ? NotifyType.USER_JOINED_ROOM : NotifyType.USER_LEFT_ROOM, payload);
     }
 }

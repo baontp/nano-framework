@@ -10,6 +10,7 @@ exports.BaseDomain = require('./src/domain');
 exports.BaseRoom = require('./src/room');
 exports.BaseLobby = require('./src/lobby');
 exports.BaseUser = require('./src/user');
+exports.BaseLobbyAdaptor = require('./src/lobby-adaptor');
 exports.BaseRoomAdaptor = require('./src/room-adaptor');
 exports.HandleResult = require('./src/handle-result');
 

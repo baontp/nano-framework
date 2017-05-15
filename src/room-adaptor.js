@@ -11,9 +11,9 @@ class RoomAdaptor {
     get logger(){return this._room.logger; }
 
     handleUserJoin(user, handleResult){}
-    handleUserLeave(user, handleResult){}
-    handleUserPaused(user, handleResult){}
-    handleUserResumed(user, handleResult){}
+    onUserLeft(user){}
+    onUserPaused(user){}
+    onUserResumed(user){}
 }
 
 module.exports = RoomAdaptor;

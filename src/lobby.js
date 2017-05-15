@@ -59,6 +59,7 @@ class Lobby extends Domain {
 
         let oldUser = this.findUserByName(user.name);
         if (!!oldUser) {
+            logger.warn('Session is overrode by', user.name);
             let message = MessageBuilder.buildAuthResponse(ResultCode.SESSION_OVERRIDE, 0, 'Session is overrode');
             oldUser.sendMessage(message);
             this.removeUser(oldUser);
@@ -84,35 +85,38 @@ class Lobby extends Domain {
 
     handleUserLeave(user, handleResult) {
         if (!user) return;
-        if (!!user.hasCleanUp) return;
 
         if(!this.checkUserJoined(user)) {
             handleResult.code = ResultCode.REQUEST_FAILED;
             return;
         }
 
-        this._adaptor.handleUserLeave(user, handleResult);
-        if(handleResult.code != ResultCode.SUCCESS) {
-            return;
-        }
-
+        this._adaptor.onUserLeft(user);
         this.removeUser(user, false);
-
         if(!handleResult.skipNotify) {
             this.broadcast(this._buildJoinLeaveNotify(user, false));
         }
     }
 
-    handleUserPaused(user, handleResult) {
+    handleSessionPaused(user, handleResult) {
     }
 
-    handleUserResumed(user, handleResult) {
+    handleSessionResumed(user, handleResult) {
+    }
+
+    handleSessionClosed(user) {
+        if (!user) return;
+        if (!!user.hasCleanUp) return;
+
+        user.cleanUp();
+        this._adaptor.onUserLeft(user);
+        this.removeUser(user, true);
     }
 
     addUser(user, notify) {
-        if(this._addUser(user)) {
+        if (this._addUser(user)) {
             user._lobby = this;
-            if(notify) {
+            if (notify) {
                 this.broadcast(this._buildJoinLeaveNotify(user, true));
             }
             return true;
@@ -121,16 +125,12 @@ class Lobby extends Domain {
     }
 
     removeUser(user, notify) {
-        if(this._removeUser(user)) {
+        if (this._removeUser(user)) {
             user._lobby = null;
-            if(notify) {
+            if (notify) {
                 this.broadcast(this._buildJoinLeaveNotify(user, false));
             }
-
-            let room = user.room;
-            if(room) {
-                room.removeUser(user, notify);
-            }
+            user.room && user.room.onUserLeft(user);
             return true;
         }
         return false;

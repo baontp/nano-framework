@@ -11,9 +11,9 @@ class LobbyAdaptor {
     get logger(){return this._lobby.logger; }
 
     handleUserJoin(user, handleResult){}
-    handleUserLeave(user, handleResult){}
-    handleUserPaused(user, handleResult){}
-    handleUserResumed(user, handleResult){}
+    onUserLeft(user){}
+    onUserPaused(user){}
+    onUserResumed(user){}
 }
 
 module.exports = LobbyAdaptor;

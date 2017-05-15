@@ -73,11 +73,7 @@ class Room extends Domain {
             return;
         }
 
-        this._adaptor.handleUserLeave(user, handleResult);
-        if(handleResult.code != ResultCode.SUCCESS) {
-            return;
-        }
-
+        this._adaptor.onUserLeft(user);
         this.removeUser(user, false);
 
         if(!handleResult.skipNotify) {
@@ -91,6 +87,11 @@ class Room extends Domain {
 
     handleUserResumed(user, handleResult) {
 
+    }
+
+    onUserLeft(user) {
+        this._adaptor.onUserLeft(user);
+        this.removeUser(user, true);
     }
 
     addUser(user, notify) {

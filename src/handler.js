@@ -36,9 +36,9 @@ class Handler {
         let lobby = user ? user.lobby : null;
         if (lobby) {
             if (socket.recoverytime > 0) {
-                lobby.handleUserPaused(user);
+                lobby.handleSessionPaused(user);
             } else {
-                lobby.handleUserLeave(user, new HandleResult());
+                lobby.handleSessionClosed(user);
             }
         }
     }
